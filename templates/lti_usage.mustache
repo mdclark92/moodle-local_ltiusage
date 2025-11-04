@@ -1,0 +1,81 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_ltiusage/lti_usage
+    LTI Usage.
+}}
+<div class="local-myplugin-lti-usage">
+    <p>{{description}}</p>
+    
+    {{#typegroups}}
+    <div class="lti-usage-table-group" data-typeid="{{typeid}}">
+    <h3>{{typename}} ({{count}})</h3>
+    <table class="generaltable">
+        <thead>
+            <tr>
+                <th style="width: 30%;">Course</th>
+                <th style="width: 30%;">Name</th>
+                <th style="width: 10%;">Visible</th>
+                <th style="width: 15%;">Link</th>
+                {{#can_delete}}<th style="width: 15%;">Delete</th>{{/can_delete}}
+            </tr>
+        </thead>
+        <tbody>
+            {{#rows}}
+            <tr>
+                <td>{{course}}</td>
+                <td>{{name}}</td>
+                <td>{{visible}}</td>
+                <td><a href="{{link}}">Open</a></td>
+                {{#can_delete}}<td><a href="{{deletelink}}" onclick="return confirm('Are you sure you want to delete this LTI activity?');">Delete</a></td>{{/can_delete}}
+            </tr>
+            {{/rows}}
+        </tbody>
+    </table>
+    {{#paginated}}
+    <ul class="mt-1 pagination">
+        <li class="page-item">
+            <a href="{{pageurl}}page_{{typeid}}=0" class="page-link">&laquo; First</a>
+        </li>
+        {{#prev}}
+        <li class="page-item">
+            <a href="{{pageurl}}page_{{typeid}}={{prev}}" class="page-link">&lsaquo; Previous</a>
+        </li>
+        {{/prev}}
+        <li class="page-item disabled">
+            <span class="page-link">Page {{currentpage}} of {{totalpages}}</span>
+        </li>
+        {{#next}}
+        <li class="page-item">
+            <a href="{{pageurl}}page_{{typeid}}={{next}}" class="page-link">Next &rsaquo;</a>
+        </li>
+        {{/next}}
+        <li class="page-item">
+            <a href="{{pageurl}}page_{{typeid}}={{lastpage}}" class="page-link">Last &raquo;</a>
+        </li>
+    </ul>
+    {{/paginated}}
+    <br>
+    </div>
+    {{/typegroups}}
+    
+    {{^typegroups}}
+    <p>No LTI usage found.</p>
+    {{/typegroups}}
+</div>
+
+
