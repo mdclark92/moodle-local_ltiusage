@@ -15,12 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file 
+ * TODO describe file
  *
  * @package    local_ltiusage
  * @copyright  2025 Michael Clark <michael.d.clark@glasgow.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace local_ltiusage\external;
 
 defined('MOODLE_INTERNAL') || die();
@@ -75,7 +76,7 @@ class get_pagination extends external_api {
         $candelete = is_siteadmin();
 
         // Get LTI activities for this type with efficient query.
-        $lti_sql = "SELECT l.id, l.course, l.name, l.typeid, l.toolurl,
+        $ltisql = "SELECT l.id, l.course, l.name, l.typeid, l.toolurl,
                            c.fullname as coursename, cm.id as cmid, cm.visible, l.name as activityname
                     FROM {lti} l
                     JOIN {course} c ON c.id = l.course
@@ -84,11 +85,11 @@ class get_pagination extends external_api {
                     )
                     WHERE l.typeid = ?
                     ORDER BY c.fullname, l.name";
-    
-        $ltirecords = $DB->get_records_sql($lti_sql, [$params['typeid']]);
+
+        $ltirecords = $DB->get_records_sql($ltisql, [$params['typeid']]);
 
         // Sort records.
-        usort($ltirecords, function($a, $b) {
+        usort($ltirecords, function ($a, $b) {
             return [$a->coursename, $a->activityname] <=> [$b->coursename, $b->activityname];
         });
 

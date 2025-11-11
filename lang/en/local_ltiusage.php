@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file 
+ * TODO describe file
  *
  * @package    local_ltiusage
  * @copyright  2025 Michael Clark <michael.d.clark@glasgow.ac.uk>
@@ -24,17 +24,17 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'LTI Usage';
-$string['manage'] = 'Manage LTI Usage';
 $string['ltiusage:manage'] = 'Manage LTI usage plugin';
-$string['ltiusage:viewltiusage'] = 'View LTI usage report';
+$string['manage'] = 'Manage LTI Usage';
+$string['pluginname'] = 'LTI Usage';
 $string['ltiusage'] = 'LTI usage';
+$string['ltiusage:viewltiusage'] = 'View LTI usage report';
 $string['ltiusage_desc'] = 'List of LTI activities across the site';
-$string['privacy:metadata'] = 'The LTI Usage plugin does not store any personal data.';
 $string['Coursename'] = 'Course';
+$string['privacy:metadata'] = 'The LTI Usage plugin does not store any personal data.';
 $string['LtiName'] = 'Name';
-$string['Visible'] = 'Visible';
 $string['Ltilink'] = 'Link';
+$string['Visible'] = 'Visible';
 $string['deletelink'] = 'Delete';
 $string['openlink'] = 'Open';
 $string['confirmlink'] = 'Are you sure you want to delete this LTI?';

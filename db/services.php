@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file 
+ * TODO describe file
  *
  * @package    local_ltiusage
  * @copyright  2025 Michael Clark <michael.d.clark@glasgow.ac.uk>

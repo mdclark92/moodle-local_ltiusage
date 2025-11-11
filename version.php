@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file 
+ * TODO describe file
  *
  * @package    local_ltiusage
  * @copyright  2025 Michael Clark <michael.d.clark@glasgow.ac.uk>
@@ -29,5 +29,3 @@ $plugin->version   = 2025111100; // YYYYMMDDXX.
 $plugin->requires  = 2024100700; // Requires Moodle 4.5 (branch 405).
 $plugin->maturity  = MATURITY_ALPHA;
 $plugin->release   = '0.1';
-
-

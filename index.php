@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * TODO describe file 
+ * TODO describe file
  *
  * @package    local_ltiusage
  * @copyright  2025 Michael Clark <michael.d.clark@glasgow.ac.uk>
@@ -64,7 +64,7 @@ foreach ($ltirecords as $r) {
     if (!isset($grouped[$typeid])) {
         $grouped[$typeid] = [];
     }
-    
+
     $link = new moodle_url('/mod/lti/view.php', ['id' => $r->cmid]);
     $deletelink = new moodle_url('/course/mod.php', ['delete' => $r->cmid, 'sesskey' => sesskey()]);
     $grouped[$typeid][] = [
@@ -81,7 +81,7 @@ foreach ($ltirecords as $r) {
 // Sort each group and get type names.
 $typegroups = [];
 foreach ($grouped as $typeid => $rows) {
-    usort($rows, function($a, $b) {
+    usort($rows, function ($a, $b) {
         return [$a['course'], $a['name']] <=> [$b['course'], $b['name']];
     });
 
