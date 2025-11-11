@@ -7,6 +7,15 @@ jobs:
     runs-on: ubuntu-22.04
 
     services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: 'postgres'
+          POSTGRES_HOST_AUTH_METHOD: 'trust'
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
+
       mariadb:
         image: mariadb:10
         env:
@@ -21,9 +30,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.1']
-        moodle-branch: ['MOODLE_404_STABLE']
-        database: [mariadb]
+        php: ['7.4', '8.0', '8.1']
+        moodle-branch: ['MOODLE_401_STABLE']
+        database: [pgsql, mariadb]
 
     steps:
       - name: Check out repository code
@@ -97,7 +106,7 @@ jobs:
       - name: Behat features
         id: behat
         if: ${{ !cancelled() }}
-        run: moodle-plugin-ci behat --profile chrome
+        run: moodle-plugin-ci behat --profile chrome --scss-deprecations
 
       - name: Upload Behat Faildump
         if: ${{ failure() && steps.behat.outcome == 'failure' }}
