@@ -46,7 +46,7 @@ $PAGE->requires->js_call_amd('local_ltiusage/pagination', 'init');
 global $DB;
 
 // Get all LTI activities with a single efficient query.
-$lti_sql = "SELECT l.id, l.course, l.name, l.typeid, l.toolurl,
+$ltisql = "SELECT l.id, l.course, l.name, l.typeid, l.toolurl,
                    c.fullname as coursename, cm.id as cmid, cm.visible, l.name as activityname
             FROM {lti} l
             JOIN {course} c ON c.id = l.course
@@ -55,7 +55,7 @@ $lti_sql = "SELECT l.id, l.course, l.name, l.typeid, l.toolurl,
             )
             ORDER BY c.fullname, l.name";
 
-$ltirecords = $DB->get_records_sql($lti_sql);
+$ltirecords = $DB->get_records_sql($ltisql);
 
 // Group by typeid.
 $grouped = [];
