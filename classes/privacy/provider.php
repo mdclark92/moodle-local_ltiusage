@@ -16,8 +16,6 @@
 
 namespace local_ltiusage\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class provider
  *
@@ -25,11 +23,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2025 Michael Clark <michael.d.clark@glasgow.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-class provider implements 
-//This plugin does not store any personal user data.
-\core_privacy\local\metadata\null_provider {
-    
+class provider implements \core_privacy\local\metadata\null_provider {  
     /**
      * 
      * Get the language string identifier with the component's language

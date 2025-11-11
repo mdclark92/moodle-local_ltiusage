@@ -29,8 +29,8 @@ require_login();
 $context = context_system::instance();
 require_capability('local/ltiusage:viewltiusage', $context);
 
-// Check if user can delete LTI activities (site admin only)
-$can_delete = is_siteadmin();
+// Check if user can delete LTI activities (site admin only).
+$candelete = is_siteadmin();
 
 $PAGE->set_url(new moodle_url('/local/ltiusage/index.php'));
 $PAGE->set_context($context);
@@ -39,13 +39,13 @@ $PAGE->set_heading(get_string('ltiusage', 'local_ltiusage'));
 
 echo $OUTPUT->header();
 
-// Initialize pagination JavaScript
+// Initialize pagination JavaScript.
 $PAGE->requires->js_call_amd('local_ltiusage/pagination', 'init');
 
 // Fetch LTI usage: old mod_lti (Activity) and/or new ltiadv if present.
 global $DB;
 
-// Get all LTI activities with a single efficient query
+// Get all LTI activities with a single efficient query.
 $lti_sql = "SELECT l.id, l.course, l.name, l.typeid, l.toolurl,
                    c.fullname as coursename, cm.id as cmid, cm.visible, l.name as activityname
             FROM {lti} l
@@ -57,7 +57,7 @@ $lti_sql = "SELECT l.id, l.course, l.name, l.typeid, l.toolurl,
 
 $ltirecords = $DB->get_records_sql($lti_sql);
 
-// Group by typeid
+// Group by typeid.
 $grouped = [];
 foreach ($ltirecords as $r) {
     $typeid = $r->typeid ?? 0;
@@ -72,13 +72,13 @@ foreach ($ltirecords as $r) {
         'name' => format_string($r->activityname ?? ''),
         'visible' => (int)$r->visible,
         'link' => $link->out(false),
-        'deletelink' => $can_delete ? $deletelink->out(false) : '',
-        'show_delete' => $can_delete,
-        'cmid' => $r->cmid, // Keep cmid for debugging
+        'deletelink' => $candelete ? $deletelink->out(false) : '',
+        'show_delete' => $candelete,
+        'cmid' => $r->cmid, // Keep cmid for debugging.
     ];
 }
 
-// Sort each group and get type names
+// Sort each group and get type names.
 $typegroups = [];
 foreach ($grouped as $typeid => $rows) {
     usort($rows, function($a, $b) {
@@ -133,7 +133,7 @@ foreach ($grouped as $typeid => $rows) {
         'next' => $next,
         'lastpage' => $lastpage,
         'pageurl' => $pageurl,
-        'can_delete' => $can_delete,
+        'can_delete' => $candelete,
     ];
 }
 
@@ -142,8 +142,6 @@ $data = [
     'typegroups' => $typegroups,
 ];
 
-// Normal page render
+// Normal page render.
 echo $OUTPUT->render_from_template('local_ltiusage/lti_usage', $data);
 echo $OUTPUT->footer();
-
-

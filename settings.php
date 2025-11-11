@@ -33,9 +33,9 @@ if ($hassiteconfig) {
     ));
 }
 
-// Add to navigation menu for users with view permission
+// Add to navigation menu for users with view permission.
 $nav = $PAGE->navigation;
-$ltiusage_node = $nav->add(
+$ltiusagenode = $nav->add(
     get_string('pluginname', 'local_ltiusage'),
     new moodle_url('/local/ltiusage/index.php'),
     navigation_node::TYPE_CUSTOM,
@@ -43,6 +43,4 @@ $ltiusage_node = $nav->add(
     'local_ltiusage',
     new pix_icon('t/viewdetails', get_string('pluginname', 'local_ltiusage'))
 );
-$ltiusage_node->showinflatnavigation = true;
-
-
+$ltiusagenode->showinflatnavigation = true;

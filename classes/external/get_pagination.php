@@ -60,21 +60,21 @@ class get_pagination extends external_api {
     public static function execute($typeid, $page, $perpage) {
         global $DB;
 
-        // Validate parameters
+        // Validate parameters.
         $params = self::validate_parameters(self::execute_parameters(), [
             'typeid' => $typeid,
             'page' => $page,
             'perpage' => $perpage,
         ]);
 
-        // Check capability
+        // Check capability.
         $context = context_system::instance();
         require_capability('local/ltiusage:viewltiusage', $context);
 
-        // Check if user can delete
-        $can_delete = is_siteadmin();
+        // Check if user can delete.
+        $candelete = is_siteadmin();
 
-        // Get LTI activities for this type with efficient query
+        // Get LTI activities for this type with efficient query.
         $lti_sql = "SELECT l.id, l.course, l.name, l.typeid, l.toolurl,
                            c.fullname as coursename, cm.id as cmid, cm.visible, l.name as activityname
                     FROM {lti} l
@@ -87,12 +87,12 @@ class get_pagination extends external_api {
     
         $ltirecords = $DB->get_records_sql($lti_sql, [$params['typeid']]);
 
-        // Sort records
+        // Sort records.
         usort($ltirecords, function($a, $b) {
             return [$a->coursename, $a->activityname] <=> [$b->coursename, $b->activityname];
         });
 
-        // Get tool type name
+        // Get tool type name.
         $typename = 'Custom/Manual LTI';
         if ($params['typeid'] > 0) {
             $type = $DB->get_record('lti_types', ['id' => $params['typeid']]);
@@ -101,24 +101,24 @@ class get_pagination extends external_api {
             }
         }
 
-        // Paginate
+        // Paginate.
         $total = count($ltirecords);
         $start = $params['page'] * $params['perpage'];
         $pagedrecords = array_slice($ltirecords, $start, $params['perpage']);
 
-        // Format rows
+        // Format rows.
         $rows = [];
         foreach ($pagedrecords as $r) {
             $link = new \moodle_url('/mod/lti/view.php', ['id' => $r->cmid]);
-            $deletelink = $can_delete ? new \moodle_url('/course/mod.php', ['delete' => $r->cmid, 'sesskey' => sesskey()]) : null;
+            $deletelink = $candelete ? new \moodle_url('/course/mod.php', ['delete' => $r->cmid, 'sesskey' => sesskey()]) : null;
 
             $rows[] = [
                 'course' => format_string($r->coursename),
                 'name' => format_string($r->activityname),
                 'visible' => (int)$r->visible,
                 'link' => $link->out(false),
-                'deletelink' => $can_delete ? $deletelink->out(false) : '',
-                'show_delete' => $can_delete,
+                'deletelink' => $candelete ? $deletelink->out(false) : '',
+                'show_delete' => $candelete,
                 'cmid' => $r->cmid,
             ];
         }
@@ -130,12 +130,12 @@ class get_pagination extends external_api {
             'total' => $total,
             'page' => $params['page'],
             'perpage' => $params['perpage'],
-            'can_delete' => $can_delete,
+            'candelete' => $candelete,
         ];
     }
 
     /**
-     * Returns description of method result value
+     * Returns description of method result value.
      * @return external_single_structure
      */
     public static function execute_returns() {
@@ -156,7 +156,7 @@ class get_pagination extends external_api {
             'total' => new external_value(PARAM_INT, 'Total records'),
             'page' => new external_value(PARAM_INT, 'Current page'),
             'perpage' => new external_value(PARAM_INT, 'Items per page'),
-            'can_delete' => new external_value(PARAM_BOOL, 'User can delete'),
+            'candelete' => new external_value(PARAM_BOOL, 'User can delete'),
         ]);
     }
 }
