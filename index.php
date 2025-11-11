@@ -45,36 +45,17 @@ $PAGE->requires->js_call_amd('local_ltiusage/pagination', 'init');
 // Fetch LTI usage: old mod_lti (Activity) and/or new ltiadv if present.
 global $DB;
 
-// Always use the most comprehensive method: scan all courses with modinfo
-$ltirecords = [];
-require_once($CFG->dirroot . '/course/lib.php');
-require_once($CFG->dirroot . '/course/modlib.php');
+// Get all LTI activities with a single efficient query
+$lti_sql = "SELECT l.id, l.course, l.name, l.typeid, l.toolurl,
+                   c.fullname as coursename, cm.id as cmid, cm.visible, l.name as activityname
+            FROM {lti} l
+            JOIN {course} c ON c.id = l.course
+            JOIN {course_modules} cm ON cm.instance = l.id AND cm.module = (
+                SELECT id FROM {modules} WHERE name = 'lti'
+            )
+            ORDER BY c.fullname, l.name";
 
-// Check for AJAX request
-$isAjax = optional_param('ajax', 0, PARAM_INT);
-
-$courses = get_courses();
-if (!empty($courses)) {
-    foreach ($courses as $course) {
-        $modinfo = get_fast_modinfo($course);
-        foreach ($modinfo->get_cms() as $cm) {
-            if ($cm->modname !== 'lti') { continue; }
-            
-            // Get additional LTI details from database
-            $lti_details = $DB->get_record('lti', ['id' => $cm->instance]);
-            
-            $ltirecords[] = (object)[
-                'courseid' => $course->id,
-                'coursename' => $course->fullname,
-                'cmid' => $cm->id,
-                'activityname' => $cm->name,
-                'toolurl' => $lti_details ? $lti_details->toolurl : '',
-                'typeid' => $lti_details ? $lti_details->typeid : 0,
-                'visible' => $cm->visible,
-            ];
-        }
-    }
-}
+$ltirecords = $DB->get_records_sql($lti_sql);
 
 // Group by typeid
 $grouped = [];
@@ -125,7 +106,7 @@ foreach ($grouped as $typeid => $rows) {
         $next = ($page + 1) < $totalpages ? $page + 1 : null;
         $lastpage = $totalpages - 1;
         $pageurl = $PAGE->url->out(false);
-        $pageurl .= (strpos($pageurl, '?') === false ? '?' : '&') . 'ajax=1&';
+        $pageurl .= (strpos($pageurl, '?') === false ? '?' : '&');
     } else {
         $pagedrows = $rows;
         $paginated = false;
@@ -161,14 +142,8 @@ $data = [
     'typegroups' => $typegroups,
 ];
 
-if ($isAjax) {
-    // Return only the table content for AJAX requests
-    echo $OUTPUT->render_from_template('local_ltiusage/lti_usage', $data);
-    exit;
-} else {
-    // Normal page render
-    echo $OUTPUT->render_from_template('local_ltiusage/lti_usage', $data);
-    echo $OUTPUT->footer();
-}
+// Normal page render
+echo $OUTPUT->render_from_template('local_ltiusage/lti_usage', $data);
+echo $OUTPUT->footer();
 
 

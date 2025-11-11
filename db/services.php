@@ -21,13 +21,24 @@
  * @copyright  2025 Michael Clark <michael.d.clark@glasgow.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_ltiusage';
-$plugin->version   = 2025092304; // YYYYMMDDXX.
-$plugin->requires  = 2024100700; // Requires Moodle 4.5 (branch 405).
-$plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '0.1';
+$functions = [
+    'local_ltiusage_get_pagination' => [
+        'classname' => 'local_ltiusage\external\get_pagination',
+        'methodname' => 'execute',
+        'description' => 'Get paginated LTI usage data for a specific tool type',
+        'type' => 'read',
+        'capabilities' => 'local/ltiusage:viewltiusage',
+        'ajax' => true,
+    ],
+];
 
-
+$services = [
+    'LTI Usage' => [
+        'functions' => ['local_ltiusage_get_pagination'],
+        'restrictedusers' => 0,
+        'enabled' => 1,
+        'shortname' => 'ltiusage',
+    ],
+];
