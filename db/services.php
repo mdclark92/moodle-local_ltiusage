@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = [
     'local_ltiusage_get_pagination' => [
-        'classname' => 'local_ltiusage\external\get_pagination',
+        'classname' => 'local_ltiusage\\external\\get_pagination',
         'methodname' => 'execute',
         'description' => 'Get paginated LTI usage data for a specific tool type',
         'type' => 'read',

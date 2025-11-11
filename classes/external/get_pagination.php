@@ -35,6 +35,7 @@ use external_value;
 use external_single_structure;
 use external_multiple_structure;
 use context_system;
+use moodle_url;
 
 class get_pagination extends external_api {
 
@@ -98,14 +99,23 @@ class get_pagination extends external_api {
         if ($params['typeid'] > 0) {
             $type = $DB->get_record('lti_types', ['id' => $params['typeid']]);
             if ($type) {
-                $typename = format_string($type->name);
+                $typename = $type->name;
             }
         }
 
         // Paginate.
         $total = count($ltirecords);
         $start = $params['page'] * $params['perpage'];
-        $pagedrecords = array_slice($ltirecords, $start, $params['perpage']);
+        $pagedrecords = array_slice($ltirecords, $start, $params['perpage'], true);
+
+        // Calculate pagination data.
+        $totalpages = ceil($total / $params['perpage']);
+        $currentpage = $params['page'] + 1; // 1-based
+        $has_prev = $params['page'] > 0;
+        $has_next = $params['page'] < $totalpages - 1;
+        $prev = $params['page'] - 1;
+        $next = $params['page'] + 1;
+        $pageurl = '/local/ltiusage/index.php';
 
         // Format rows.
         $rows = [];
@@ -114,8 +124,8 @@ class get_pagination extends external_api {
             $deletelink = $candelete ? new \moodle_url('/course/mod.php', ['delete' => $r->cmid, 'sesskey' => sesskey()]) : null;
 
             $rows[] = [
-                'course' => format_string($r->coursename),
-                'name' => format_string($r->activityname),
+                'course' => $r->coursename,
+                'name' => $r->activityname,
                 'visible' => (int)$r->visible,
                 'link' => $link->out(false),
                 'deletelink' => $candelete ? $deletelink->out(false) : '',
@@ -132,6 +142,13 @@ class get_pagination extends external_api {
             'page' => $params['page'],
             'perpage' => $params['perpage'],
             'candelete' => $candelete,
+            'has_prev' => $has_prev,
+            'has_next' => $has_next,
+            'prev' => $prev,
+            'next' => $next,
+            'totalpages' => $totalpages,
+            'currentpage' => $currentpage,
+            'pageurl' => $pageurl,
         ];
     }
 
@@ -158,6 +175,13 @@ class get_pagination extends external_api {
             'page' => new external_value(PARAM_INT, 'Current page'),
             'perpage' => new external_value(PARAM_INT, 'Items per page'),
             'candelete' => new external_value(PARAM_BOOL, 'User can delete'),
+            'has_prev' => new external_value(PARAM_BOOL, 'Has previous page'),
+            'has_next' => new external_value(PARAM_BOOL, 'Has next page'),
+            'prev' => new external_value(PARAM_INT, 'Previous page number'),
+            'next' => new external_value(PARAM_INT, 'Next page number'),
+            'totalpages' => new external_value(PARAM_INT, 'Total pages'),
+            'currentpage' => new external_value(PARAM_INT, 'Current page (1-based)'),
+            'pageurl' => new external_value(PARAM_URL, 'Base page URL'),
         ]);
     }
 }

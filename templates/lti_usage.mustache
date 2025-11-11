@@ -47,26 +47,20 @@
         </tbody>
     </table>
     {{#paginated}}
-    <ul class="mt-1 pagination">
-        <li class="page-item">
-            <a href="{{pageurl}}page_{{typeid}}=0" class="page-link">&laquo; First</a>
-        </li>
-        {{#prev}}
+    <ul class="pagination mt-1 justify-content-center" data-typeid="{{typeid}}">
+        {{#has_prev}}
         <li class="page-item">
             <a href="{{pageurl}}page_{{typeid}}={{prev}}" class="page-link">&lsaquo; Previous</a>
         </li>
-        {{/prev}}
+        {{/has_prev}}
         <li class="page-item disabled">
             <span class="page-link">Page {{currentpage}} of {{totalpages}}</span>
         </li>
-        {{#next}}
+        {{#has_next}}
         <li class="page-item">
             <a href="{{pageurl}}page_{{typeid}}={{next}}" class="page-link">Next &rsaquo;</a>
         </li>
-        {{/next}}
-        <li class="page-item">
-            <a href="{{pageurl}}page_{{typeid}}={{lastpage}}" class="page-link">Last &raquo;</a>
-        </li>
+        {{/has_next}}
     </ul>
     {{/paginated}}
     <br>

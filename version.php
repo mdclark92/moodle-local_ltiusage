@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_ltiusage';
-$plugin->version   = 2025111100; // YYYYMMDDXX.
+$plugin->version   = 2025111103; // YYYYMMDDXX.
 $plugin->requires  = 2024100700; // Requires Moodle 4.5 (branch 405).
 $plugin->maturity  = MATURITY_ALPHA;
 $plugin->release   = '0.1';

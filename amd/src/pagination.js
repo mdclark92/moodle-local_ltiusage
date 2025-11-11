@@ -22,85 +22,116 @@
 define(['jquery', 'core/ajax'], function($, ajax) {
     'use strict';
 
-    return {
-        init: function() {
-            $(document).off('click.pagination').on('click.pagination', '.pagination a', function(e) {
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                e.stopPropagation();
+    var init = function() {
 
-                var link = $(this);
-                var url = link.attr('href');
-                var tableContainer = link.closest('.lti-usage-table-group');
-                var pageMatch = url.match(/page_(\d+)=(\d+)/);
-                var typeId = parseInt(pageMatch[1]);
-                var pageNum = parseInt(pageMatch[2]);
+        $(document).off('click.pagination').on('click.pagination', '.pagination a', function(e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            e.stopPropagation();
 
-                // Show loading indicator
-                tableContainer.find('table').css('opacity', '0.5');
+            var link = $(this);
 
-                // Call external service
-                ajax.call([{
-                    methodname: 'local_ltiusage_get_pagination',
-                    args: {
-                        typeid: typeId,
-                        page: pageNum,
-                        perpage: 25
-                    },
-                    done: function(response) {
+            // Skip disabled links.
+            if (link.hasClass('disabled') || link.closest('li').hasClass('disabled')) {
+                return false;
+            }
 
-                        // Update table content with new data
-                        var tbody = tableContainer.find('tbody');
-                        tbody.empty();
+            var url = link.attr('href');
+            var tableContainer = link.closest('.lti-usage-table-group');
+            var pageMatch = url.match(/page_(\d+)=(\d+)/);
+            if (!pageMatch) {
+                return false;
+            }
+            var typeId = parseInt(pageMatch[1]);
+            var pageNum = parseInt(pageMatch[2]);
 
-                        response.rows.forEach(function(row) {
-                            var deleteCell = response.can_delete ?
-                                '<td><a href="' + row.deletelink + '" onclick="return confirm(\'Are you sure you want to delete this LTI activity?\');">Delete</a></td>' :
-                                '';
+            // Show loading indicator.
+            tableContainer.find('table').css('opacity', '0.5');
 
-                            var tr = '<tr>' +
-                                '<td>' + row.course + '</td>' +
-                                '<td>' + row.name + '</td>' +
-                                '<td>' + row.visible + '</td>' +
-                                '<td><a href="' + row.link + '">Open</a></td>' +
-                                deleteCell +
-                                '</tr>';
-                            tbody.append(tr);
-                        });
+            // Call external service.
+            ajax.call([{
+                methodname: 'local_ltiusage_get_pagination',
+                args: {
+                    typeid: typeId,
+                    page: pageNum,
+                    perpage: 25
+                },
+                done: function(response) {
 
-                        // Update pagination if needed
-                        var paginationDiv = tableContainer.find('.pagination');
-                        if (paginationDiv.length) {
-                            // Re-generate pagination HTML based on response
-                            var totalPages = Math.ceil(response.total / 25);
-                            var paginationHtml = '';
+                    // Update table content with new data.
+                    var tbody = tableContainer.find('tbody');
+                    tbody.empty();
 
-                            if (pageNum > 0) {
-                                paginationHtml += '<a href="' + url.replace(/page_\d+=\d+/, 'page_' + typeId + '=' + (pageNum - 1)) + '" class="btn btn-secondary">&lsaquo; Previous</a> ';
-                            }
+                    response.rows.forEach(function(row) {
+                        var deleteCell = response.candelete ?
+                            '<td><a href="' + row.deletelink + '" onclick="return confirm(\'Are you sure you want to delete this LTI activity?\');">Delete</a></td>' :
+                            '';
 
-                            paginationHtml += 'Page ' + (pageNum + 1) + ' of ' + totalPages;
+                        var tr = '<tr>' +
+                            '<td>' + row.course + '</td>' +
+                            '<td>' + row.name + '</td>' +
+                            '<td>' + row.visible + '</td>' +
+                            '<td><a href="' + row.link + '">Open</a></td>' +
+                            deleteCell +
+                            '</tr>';
+                        tbody.append(tr);
+                    });
 
-                            if (pageNum < totalPages - 1) {
-                                paginationHtml += ' <a href="' + url.replace(/page_\d+=\d+/, 'page_' + typeId + '=' + (pageNum + 1)) + '" class="btn btn-secondary">Next &rsaquo;</a>';
-                            }
+                    // Update pagination if needed - regenerate the entire navigation.
+                    var paginationUl = tableContainer.find('.pagination');
+                    if (paginationUl.length) {
+                        var totalPages = Math.ceil(response.total / 25);
+                        var html = '';
 
-                            paginationDiv.html(paginationHtml);
+                        // First button.
+                        html += '<li class="page-item' + (pageNum === 0 ? ' disabled' : '') + '">';
+                        html += '<a href="' + url.replace(/page_\d+=\d+/, 'page_' + typeId + '=0') + '" class="page-link' + (pageNum === 0 ? ' disabled' : '') + '">&laquo; First</a>';
+                        html += '</li>';
+
+                        // Previous button.
+                        if (response.has_prev) {
+                            html += '<li class="page-item">';
+                            html += '<a href="' + url.replace(/page_\d+=\d+/, 'page_' + typeId + '=' + response.prev) + '" class="page-link">&lsaquo; Previous</a>';
+                            html += '</li>';
                         }
 
-                        // Restore opacity
-                        tableContainer.find('table').css('opacity', '1');
+                        // Page info.
+                        html += '<li class="page-item disabled">';
+                        html += '<span class="page-link">Page ' + (pageNum + 1) + ' of ' + totalPages + '</span>';
+                        html += '</li>';
 
-                        // Scroll to table top
-                        setTimeout(function() {
-                            $(window).scrollTop(tableContainer.offset().top - 20);
-                        }, 10);
-                    },
+                        // Next button.
+                        if (response.has_next) {
+                            html += '<li class="page-item">';
+                            html += '<a href="' + url.replace(/page_\d+=\d+/, 'page_' + typeId + '=' + response.next) + '" class="page-link">Next &rsaquo;</a>';
+                            html += '</li>';
+                        }
 
-                }]);
+                        // Last button.
+                        html += '<li class="page-item' + (pageNum === totalPages - 1 ? ' disabled' : '') + '">';
+                        html += '<a href="' + url.replace(/page_\d+=\d+/, 'page_' + typeId + '=' + (totalPages - 1)) + '" class="page-link' + (pageNum === totalPages - 1 ? ' disabled' : '') + '">Last &raquo;</a>';
+                        html += '</li>';
 
-                return false;
-            });
-        }
+                        paginationUl.html(html);
+                    }
+
+                    // Restore opacity.
+                    tableContainer.find('table').css('opacity', '1');
+
+                    // Scroll to table top.
+                    setTimeout(function() {
+                        $(window).scrollTop(tableContainer.offset().top - 20);
+                    }, 10);
+                },
+            }]);
+
+            return false;
+        });
     };
+
+    // Make the module globally available for js_init_call
+    M.local_ltiusage = M.local_ltiusage || {};
+    M.local_ltiusage.pagination = {init: init};
+
+    return {init: init};
 });

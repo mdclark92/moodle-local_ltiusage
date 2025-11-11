@@ -39,8 +39,16 @@ $PAGE->set_heading(get_string('ltiusage', 'local_ltiusage'));
 
 echo $OUTPUT->header();
 
-// Initialize pagination JavaScript.
+// Initialize pagination JavaScript for AJAX
 $PAGE->requires->js_call_amd('local_ltiusage/pagination', 'init');
+echo "<!-- AJAX pagination enabled at " . time() . " -->";
+
+// Debug: Check if the module is loading
+$PAGE->requires->js_amd_inline("
+require(['local_ltiusage/pagination'], function(pagination) {
+    console.log('Module loaded successfully:', pagination);
+});
+");
 
 // Fetch LTI usage: old mod_lti (Activity) and/or new ltiadv if present.
 global $DB;
@@ -129,11 +137,15 @@ foreach ($grouped as $typeid => $rows) {
         'total' => $total,
         'totalpages' => $totalpages,
         'currentpage' => $currentpage,
+        'has_prev' => $prev !== null,
+        'has_next' => $next !== null,
         'prev' => $prev,
         'next' => $next,
         'lastpage' => $lastpage,
         'pageurl' => $pageurl,
         'can_delete' => $candelete,
+        'first_disabled' => $page == 0,
+        'last_disabled' => $page == $lastpage,
     ];
 }
 
