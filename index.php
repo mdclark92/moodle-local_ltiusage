@@ -41,14 +41,6 @@ echo $OUTPUT->header();
 
 // Initialize pagination JavaScript for AJAX
 $PAGE->requires->js_call_amd('local_ltiusage/pagination', 'init');
-echo "<!-- AJAX pagination enabled at " . time() . " -->";
-
-// Debug: Check if the module is loading
-$PAGE->requires->js_amd_inline("
-require(['local_ltiusage/pagination'], function(pagination) {
-    console.log('Module loaded successfully:', pagination);
-});
-");
 
 // Fetch LTI usage: old mod_lti (Activity) and/or new ltiadv if present.
 global $DB;
