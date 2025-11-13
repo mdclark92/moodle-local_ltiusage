@@ -71,6 +71,7 @@ class get_pagination extends external_api {
 
         // Check capability.
         $context = context_system::instance();
+        self::validate_context($context);
         require_capability('local/ltiusage:viewltiusage', $context);
 
         // Check if user can delete.
